@@ -1,13 +1,23 @@
-# spf13-vim : Steve Francia's Vim Distribution
+# spf13-vim : Steve Francia's Vim Distribution resurrected from the grave
 
-                    __ _ _____              _
-         ___ _ __  / _/ |___ /      __   __(_)_ __ ___
-        / __| '_ \| |_| | |_ \ _____\ \ / /| | '_ ` _ \
-        \__ \ |_) |  _| |___) |_____|\ V / | | | | | | |
-        |___/ .__/|_| |_|____/        \_/  |_|_| |_| |_|
-            |_|
+                  __ _ _____                         _     _
+       ___ _ __  / _/ |___ /      _______  _ __ ___ | |__ (_) ___
+      / __| '_ \| |_| | |_ \ ____|_  / _ \| '_ ` _ \| '_ \| |/ _ \
+      \__ \ |_) |  _| |___) |_____/ / (_) | | | | | | |_) | |  __/
+      |___/ .__/|_| |_|____/     /___\___/|_| |_| |_|_.__/|_|\___|
+          |_|
 
-spf13-vim is a distribution of vim plugins and resources for Vim, Gvim and [MacVim].
+Thank you Steve Francia for taking our vim configurations to the next level.
+
+It’s been a long time since your distro has seen any enhancements.
+
+I hope you don’t mind me resurrecting it from the dead to make Vim 8.* amazing for newcomers.
+
+You had so many great things here and it would be a same to see atrophy.
+
+spf13-vim was a distribution of vim plugins and resources for Vim, Gvim and [MacVim].
+
+Zombie-spf13 is a distribution built from the grave of spf13-vim with adjustments to it by Kyle McFarland.
 
 It is a good starting point for anyone intending to use VIM for development running equally well on Windows, Linux, \*nix and Mac.
 
