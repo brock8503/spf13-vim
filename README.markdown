@@ -9,11 +9,11 @@
 
 Thank you Steve Francia for taking our vim configurations to the next level.
 
-It’s been a long time since your distro has seen any enhancements.
+It’s been a long time since this distro has seen any enhancements.
 
-I hope you don’t mind me resurrecting it from the dead to make Vim 8.* amazing for newcomers.
+I am resurrecting it from the dead to make Vim 8.* amazing for newcomers.
 
-You had so many great things here and it would be a same to see atrophy.
+This distro had so many great things and it would be a shame to see it all atrophy.
 
 spf13-vim was a distribution of vim plugins and resources for Vim, Gvim and [MacVim].
 
