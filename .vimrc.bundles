@@ -101,7 +101,7 @@
 
     " General {
         if count(g:spf13_bundle_groups, 'general')
-            Plugin 'scrooloose/nerdtree'
+            Plugin 'preservim/nerdtree'
             Plugin 'altercation/vim-colors-solarized'
             Plugin 'spf13/vim-colors'
             Plugin 'tpope/vim-surround'
