@@ -78,13 +78,13 @@
         Plugin 'MarcWeber/vim-addon-mw-utils'
         Plugin 'tomtom/tlib_vim'
         if executable('ag')
-            Plugin 'mileszs/ack.vim'
-            let g:ackprg = 'ag --nogroup --nocolor --column --smart-case'
+            Plugin 'brock8503/ack.vim'
+            let g:ackprg = 'ag --nogroup --column --smart-case --vimgrep'
         elseif executable('ack-grep')
             let g:ackprg="ack-grep -H --nocolor --nogroup --column"
-            Plugin 'mileszs/ack.vim'
+            Plugin 'brock8503/ack.vim'
         elseif executable('ack')
-            Plugin 'mileszs/ack.vim'
+            Plugin 'brock8503/ack.vim'
         endif
     " }
 
