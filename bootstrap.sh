@@ -16,7 +16,7 @@
 
 ############################  SETUP PARAMETERS
 app_name='spf13-vim'
-[ -z "$APP_PATH" ] && APP_PATH="$HOME/.spf13-vim-3"
+[ -z "$APP_PATH" ] && APP_PATH="$HOME/.spf13-vim-zombie"
 [ -z "$REPO_URI" ] && REPO_URI='https://github.com/brock8503/spf13-vim.git'
 [ -z "$REPO_BRANCH" ] && REPO_BRANCH='master'
 debug_mode='0'

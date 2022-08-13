@@ -47,6 +47,11 @@
         set nocompatible        " Must be first line
         if !WINDOWS()
             set shell=/bin/sh
+            if exists('g:spf13_use_bash')
+                " Load bash_profile in vim shell
+                "set shellcmdflag=-ic
+                set shell=/bin/bash\ --rcfile\ ~/.bash_profile
+            endif
         endif
     " }
 
@@ -57,7 +62,7 @@
           set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
         endif
     " }
-    
+
     " Arrow Key Fix {
         " https://github.com/spf13/spf13-vim/issues/780
         if &term[:4] == "xterm" || &term[:5] == 'screen' || &term[:3] == 'rxvt'
@@ -93,7 +98,6 @@
             set background=dark
         endif
     endfunction
-    noremap <leader>bg :call ToggleBG()<CR>
 
     " if !has('gui')
         "set term=$TERM          " Make arrow and other keys work
@@ -126,7 +130,7 @@
     set viewoptions=folds,options,cursor,unix,slash " Better Unix / Windows compatibility
     set virtualedit=onemore             " Allow for cursor beyond last character
     set history=1000                    " Store a ton of history (default is 20)
-    set spell                           " Spell checking on
+    set spell                           " Spell checking on, use z= to correct spelling
     set hidden                          " Allow buffer switching without saving
     set iskeyword-=.                    " '.' is an end of word designator
     set iskeyword-=#                    " '#' is an end of word designator
@@ -183,6 +187,16 @@
         let g:solarized_contrast="normal"
         let g:solarized_visibility="normal"
         color solarized             " Load a colorscheme
+
+        "set background=dark
+        let g:dracula_colorterm = 0
+        " https://github.com/dracula/vim/issues/65
+        " set termguicolors
+        let g:dracula_italic = 0
+        colorscheme dracula-extended
+        "colorscheme solarized
+        " use underline for dracula spell highlighting
+        hi SpellBad ctermbg=NONE cterm=underline
     endif
 
     set tabpagemax=15               " Only show 15 tabs
@@ -239,34 +253,44 @@
 
     set nowrap                      " Do not wrap long lines
     set autoindent                  " Indent at the same level of the previous line
-    set shiftwidth=4                " Use indents of 4 spaces
+    set shiftwidth=2                " Use indents of 4 spaces
     set expandtab                   " Tabs are spaces, not tabs
-    set tabstop=4                   " An indentation every four columns
-    set softtabstop=4               " Let backspace delete indent
+    set tabstop=2                   " An indentation every four columns
+    set softtabstop=2               " Let backspace delete indent
     set nojoinspaces                " Prevents inserting two spaces after punctuation on a join (J)
     set splitright                  " Puts new vsplit windows to the right of the current
     set splitbelow                  " Puts new split windows to the bottom of the current
     "set matchpairs+=<:>             " Match, to be used with %
     set pastetoggle=<F12>           " pastetoggle (sane indentation on pastes)
-    "set comments=sl:/*,mb:*,elx:*/  " auto format comment blocks
-    " Remove trailing whitespaces and ^M chars
-    " To disable the stripping of whitespace, add the following to your
-    " .vimrc.before.local file:
-    "   let g:spf13_keep_trailing_whitespace = 1
-    autocmd FileType c,cpp,java,go,php,javascript,puppet,python,rust,twig,xml,yml,perl,sql autocmd BufWritePre <buffer> if !exists('g:spf13_keep_trailing_whitespace') | call StripTrailingWhitespace() | endif
-    "autocmd FileType go autocmd BufWritePre <buffer> Fmt
-    autocmd BufNewFile,BufRead *.html.twig set filetype=html.twig
-    autocmd FileType haskell,puppet,ruby,yml setlocal expandtab shiftwidth=2 softtabstop=2
-    " preceding line best in a plugin but here for now.
 
-    autocmd BufNewFile,BufRead *.coffee set filetype=coffee
+    " Slow ruby https://github.com/vim-ruby/vim-ruby/issues/243
+    set ttyfast
+    set regexpengine=1
 
-    " Workaround vim-commentary for Haskell
-    autocmd FileType haskell setlocal commentstring=--\ %s
-    " Workaround broken colour highlighting in Haskell
-    autocmd FileType haskell,rust setlocal nospell
+    " File Formatting {
+        "set comments=sl:/*,mb:*,elx:*/  " auto format comment blocks
+        " Remove trailing whitespaces and ^M chars
+        " To disable the stripping of whitespace, add the following to your
+        " .vimrc.before.local file:
+        "   let g:spf13_keep_trailing_whitespace = 1
+        "
+        autocmd FileType c,cpp,cs,java,go,php,javascript,puppet,python,rust,twig,xml,yml,perl,sql autocmd BufWritePre <buffer> if !exists('g:spf13_keep_trailing_whitespace') | call StripTrailingWhitespace() | endif
+        "autocmd FileType go autocmd BufWritePre <buffer> Fmt
+        autocmd BufNewFile,BufRead *.html.twig set filetype=html.twig
+        autocmd Filetype java,cs setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
+        " preceding line best in a plugin but here for now.
 
+        " Workaround vim-commentary for Haskell
+        autocmd FileType haskell setlocal commentstring=--\ %s
+        " Workaround broken colour highlighting in Haskell
+        autocmd FileType haskell,rust setlocal nospell
+
+        " Wrap line for txt, log and md files
+        autocmd BufNewFile,BufRead *.text,*.txt,*.log setlocal wrap linebreak nolist textwidth=0 wrapmargin=0
+        autocmd Filetype markdown setlocal wrap linebreak nolist textwidth=0 wrapmargin=0
+    " }
 " }
+
 
 " Key (re)Mappings {
 
@@ -397,6 +421,9 @@
     nmap <leader>f7 :set foldlevel=7<CR>
     nmap <leader>f8 :set foldlevel=8<CR>
     nmap <leader>f9 :set foldlevel=9<CR>
+    " Fold everything around selection
+    "https://stackoverflow.com/a/11862731
+    vnoremap <Leader>za <Esc>`<kzfgg`>jzfG`<
 
     " Most prefer to toggle search highlighting rather than clear the current
     " search results. To clear search highlighting rather than toggle it on
@@ -430,9 +457,10 @@
 
     " Some helpers to edit mode
     " http://vimcasts.org/e/14
-    cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<cr>
+    cnoremap %% <C-R>=fnameescapeexpand('%:h')).'/'<cr>
     map <leader>ew :e %%
-    map <leader>es :sp %%
+    " this conflicts with opening the config files
+    " map <leader>es :sp %%
     map <leader>ev :vsp %%
     map <leader>et :tabe %%
 
@@ -440,7 +468,8 @@
     map <Leader>= <C-w>=
 
     " Map <Leader>ff to display all lines with keyword under cursor
-    " and ask which one to jump to
+    " and ask which one to jump to. This is a simple version. For more
+    " advanced motion use easymotion or ctags
     nmap <Leader>ff [I:let nr = input("Which one: ")<Bar>exe "normal " . nr ."[\t"<CR>
 
     " Easier horizontal scrolling
@@ -453,6 +482,29 @@
     " FIXME: Revert this f70be548
     " fullscreen mode for GVIM and Terminal, need 'wmctrl' in you PATH
     map <silent> <F11> :call system("wmctrl -ir " . v:windowid . " -b toggle,fullscreen")<CR>
+
+    " Paste at the end or beginning of a line
+    nmap ,p 0P
+    nmap ,P $p
+
+    " Buffer enhancements {
+        " close but don't remove split
+        command Bd bp|bd #
+        " https://stackoverflow.com/questions/4545275/vim-close-all-buffers-but-this-one
+        command! BufOnly silent! execute "%bd|e#|bd#"
+    " }
+
+    " Window enhancements {
+        " Nice zoom in and out
+        noremap Zz <c-w>_ \| <c-w>\|
+        noremap Zo <c-w>=
+        " Resize window with shift + arrow
+        " https://www.reddit.com/r/vim/comments/5onsnv/another_plugin_for_window_resizing/
+        nnoremap <S-Up> <C-w>+
+        nnoremap <S-Down> <C-w>-
+        nnoremap <S-Right> <C-w><
+        nnoremap <S-Left> <C-w>>
+    " }
 
 " }
 
@@ -619,8 +671,27 @@
         endif
     " }
 
+    " Git diff {
+        " git-diff-aware version of gf commands.
+        " https://whileimautomaton.net/2011/03/02212116
+        nnoremap <expr> gf  <SID>do_git_diff_aware_gf('gf')
+        nnoremap <expr> gF  <SID>do_git_diff_aware_gf('gF')
+        nnoremap <expr> <C-w>f  <SID>do_git_diff_aware_gf('<C-w>f')
+        nnoremap <expr> <C-w><C-f>  <SID>do_git_diff_aware_gf('<C-w><C-f>')
+        nnoremap <expr> <C-w>F  <SID>do_git_diff_aware_gf('<C-w>F')
+        nnoremap <expr> <C-w>gf  <SID>do_git_diff_aware_gf('<C-w>gf')
+        nnoremap <expr> <C-w>gF  <SID>do_git_diff_aware_gf('<C-w>gF')
+    " }
+
+    " HTML {
+        " https://stackoverflow.com/questions/815548/how-do-i-tidy-up-an-html-files-indentation-in-vi/19960714#19960714
+        nmap <leader>h <Esc>:%:!tidy -mi -xml -wrap 0 %<CR><Esc>:set filetype=xml<CR>
+        command! TidyHtml execute ":!tidy -mi -xml -wrap 0 %"
+    " }
+
     " JSON {
         nmap <leader>jt <Esc>:%!python -m json.tool<CR><Esc>:set filetype=json<CR>
+        command! PrettyJson %!python -m json.tool
         let g:vim_json_syntax_conceal = 0
     " }
 
@@ -1062,7 +1133,103 @@
         "endif
     " }
 
+    " OmniSharp {
+        " https://github.com/OmniSharp/omnisharp-vim#new-asynchronous-server-interactions
+        " Note: this is required for the plugin to work
+        filetype indent plugin on
 
+        " Use the stdio OmniSharp-roslyn server
+        let g:OmniSharp_server_stdio = 1
+
+        " Set the type lookup function to use the preview window instead of echoing it
+        "let g:OmniSharp_typeLookupInPreview = 1
+
+        " Timeout in seconds to wait for a response from the server
+        let g:OmniSharp_timeout = 5
+
+        " Don't autoselect first omnicomplete option, show options even if there is only
+        " one (so the preview documentation is accessible). Remove 'preview' if you
+        " don't want to see any documentation whatsoever.
+        set completeopt=longest,menuone,preview
+
+        " Fetch full documentation during omnicomplete requests.
+        " By default, only Type/Method signatures are fetched. Full documentation can
+        " still be fetched when you need it with the :OmniSharpDocumentation command.
+        "let g:omnicomplete_fetch_full_documentation = 1
+
+        " Set desired preview window height for viewing documentation.
+        " You might also want to look at the echodoc plugin.
+        set previewheight=5
+
+        " Tell ALE to use OmniSharp for linting C# files, and no other linters.
+        let g:ale_linters = { 'cs': ['OmniSharp'] }
+
+        " Update semantic highlighting on BufEnter and InsertLeave
+        let g:OmniSharp_highlight_types = 3
+        let g:OmniSharp_server_use_mono = 1
+
+        augroup omnisharp_commands
+            autocmd!
+
+            " Show type information automatically when the cursor stops moving
+            autocmd CursorHold *.cs call OmniSharp#TypeLookupWithoutDocumentation()
+
+            " The following commands are contextual, based on the cursor position.
+            autocmd FileType cs nnoremap <buffer> gd :OmniSharpGotoDefinition<CR>
+            autocmd FileType cs nnoremap <buffer> <Leader>fi :OmniSharpFindImplementations<CR>
+            autocmd FileType cs nnoremap <buffer> <Leader>fs :OmniSharpFindSymbol<CR>
+            autocmd FileType cs nnoremap <buffer> <Leader>fu :OmniSharpFindUsages<CR>
+
+            " Finds members in the current buffer
+            autocmd FileType cs nnoremap <buffer> <Leader>fm :OmniSharpFindMembers<CR>
+
+            autocmd FileType cs nnoremap <buffer> <Leader>fx :OmniSharpFixUsings<CR>
+            autocmd FileType cs nnoremap <buffer> <Leader>tt :OmniSharpTypeLookup<CR>
+            autocmd FileType cs nnoremap <buffer> <Leader>dc :OmniSharpDocumentation<CR>
+            autocmd FileType cs nnoremap <buffer> <C-\> :OmniSharpSignatureHelp<CR>
+            autocmd FileType cs inoremap <buffer> <C-\> <C-o>:OmniSharpSignatureHelp<CR>
+
+            " Navigate up and down by method/property/field
+            autocmd FileType cs nnoremap <buffer> <C-d> :OmniSharpNavigateUp<CR>
+            autocmd FileType cs nnoremap <buffer> <C-u> :OmniSharpNavigateDown<CR>
+
+            " Find all code errors/warnings for the current solution and populate the quickfix window
+            autocmd FileType cs nnoremap <buffer> <Leader>cc :OmniSharpGlobalCodeCheck<CR>
+        augroup END
+
+        " Contextual code actions (uses fzf, CtrlP or unite.vim when available)
+        nnoremap <Leader><Space> :OmniSharpGetCodeActions<CR>
+        " Run code actions with text selected in visual mode to extract method
+        xnoremap <Leader><Space> :call OmniSharp#GetCodeActions('visual')<CR>
+
+        " Rename with dialog
+        nnoremap <Leader>nm :OmniSharpRename<CR>
+        nnoremap <F2> :OmniSharpRename<CR>
+        " Rename without dialog - with cursor on the symbol to rename: `:Rename newname`
+        command! -nargs=1 Rename :call OmniSharp#RenameTo("<args>")
+
+        nnoremap <Leader>cf :OmniSharpCodeFormat<CR>
+
+        " Start the omnisharp server for the current solution
+        nnoremap <Leader>ss :OmniSharpStartServer<CR>
+        nnoremap <Leader>sp :OmniSharpStopServer<CR>
+
+        " Enable snippet completion
+        " let g:OmniSharp_want_snippet=1
+        let g:OmniSharp_highlight_groups = {
+        \ 'csUserIdentifier': [
+        \   'constant name', 'enum member name', 'field name', 'identifier',
+        \   'local name', 'parameter name', 'property name', 'static symbol'],
+        \ 'csUserInterface': ['interface name'],
+        \ 'csUserMethod': ['extension method name', 'method name'],
+        \ 'csUserType': ['class name', 'enum name', 'namespace name', 'struct name']
+        \}
+    " }
+
+    " Ack {
+        cnoreabbrev Ack Ack!
+        nnoremap <Leader>a :Ack!<Space>
+    " }
 
 " }
 
@@ -1224,6 +1391,21 @@
         endif
      
         execute bufwinnr(".vimrc.local") . "wincmd w"
+    endfunction
+
+    function! s:do_git_diff_aware_gf(command)
+      let target_path = expand('<cfile>')
+      if target_path =~# '^[ab]/'  " with a peculiar prefix of git-diff(1)?
+        if filereadable(target_path) || isdirectory(target_path)
+          return a:command
+        else
+          " BUGS: Side effect - Cursor position is changed.
+          let [_, c] = searchpos('\f\+', 'cenW')
+          return c . '|' . 'v' . (len(target_path) - 2 - 1) . 'h' . a:command
+        endif
+      else
+        return a:command
+      endif
     endfunction
      
     execute "noremap " . s:spf13_edit_config_mapping " :call <SID>EditSpf13Config()<CR>"

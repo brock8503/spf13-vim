@@ -7,17 +7,17 @@
       |___/ .__/|_| |_|____/     /___\___/|_| |_| |_|_.__/|_|\___|
           |_|
 
-Thank you Steve Francia for taking our vim configurations to the next level.
+Thanks to Steve Francia for taking vim configurations to the next level.
 
 It’s been a long time since this distro has seen any enhancements.
 
-I am resurrecting it from the dead to make Vim 8.* amazing for newcomers.
+I am resurrecting it from the dead to make Vim 8 amazing for newcomers.
 
 This distro had so many great things and it would be a shame to see it all atrophy.
 
-spf13-vim was a distribution of vim plugins and resources for Vim, Gvim and [MacVim].
+[spf13-vim](http://vim.spf13.com/) was a distribution of vim plugins and resources for Vim, Gvim and MacVim.
 
-Zombie-spf13 is a distribution built from the grave of spf13-vim with adjustments to it by Kyle McFarland.
+spf13-zombie is a distribution built from the graves of spf13-vim with adjustments to it by Kyle McFarland.
 
 It is a good starting point for anyone intending to use VIM for development running equally well on Windows, Linux, \*nix and Mac.
 
